@@ -1,0 +1,26 @@
+body {
+    display: flex;
+    align-content: center;
+    margin: auto;
+    background-color: blueviolet;
+}
+
+.mycanvas {
+    display: block;
+    margin: auto;
+    width: 30%;
+    background-color: brown;
+}
+
+video {
+    display: block;
+    margin: auto;
+    width: 30%;
+}
+
+button {
+    display: block;
+    margin: auto;
+    width: 6rem;
+    height: 2rem;
+}

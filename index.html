@@ -1,12 +1,19 @@
-<h1>Hello!</h1>
-<h1>Test!</h1>
-<video id="myVidPlayer" controls muted autoplay></video>
-<button onclick="snapshot()" >Snapshot</button>
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="style.css" />
 
-<div class="mycanvas">
-    <h6>Captured snapshot</h6>
-    <canvas></canvas>
-</div>
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+    </head>
+    <body>
+        <video id="webcam" controls muted autoplay></video>
+        <button onclick="snapshot()">Snapshot</button>
 
+        <div class="mycanvas">
+            <canvas></canvas>
+        </div>
+    </body>
+</html>
 
 <script src="./script.js"></script>
