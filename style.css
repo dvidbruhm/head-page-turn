@@ -1,26 +1,20 @@
 body {
-    display: flex;
-    align-content: center;
-    margin: auto;
-    background-color: blueviolet;
+    background-color: rgb(87, 42, 129);
 }
 
-.mycanvas {
-    display: block;
-    margin: auto;
+#landmarks {
+    position: absolute;
+    top: 50px;
+    left: 0;
+}
+
+.video-container {
     width: 30%;
-    background-color: brown;
+    height: 30%;
 }
 
-video {
-    display: block;
-    margin: auto;
-    width: 30%;
-}
-
-button {
-    display: block;
-    margin: auto;
-    width: 6rem;
-    height: 2rem;
+#webcam {
+    position: absolute;
+    top: 50px;
+    left: 0;
 }
