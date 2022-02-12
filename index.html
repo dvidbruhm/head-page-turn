@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>Pdf page turning using a head gesture</title>
-        <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
-        <link rel="stylesheet" href="style.css" />
-    </head>
-    <body>
-        <div class="video-container">
-            <video id="webcam" playsinline></video>
-            <canvas id="landmarks"></canvas>
-        </div>
-        <div id="angle">0</div>
-    </body>
+
+<head>
+    <meta charset="utf-8" />
+    <title>Pdf page turning using a head gesture</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <div class="video-container">
+        <video id="webcam" playsinline></video>
+        <canvas id="landmarks"></canvas>
+    </div>
+    <div id="angle">0</div>
+    <div class="pdf-container">
+        <object data="assets/Misty.pdf" type="application/pdf" id="pdf">
+            <div>No PDF viewer available</div>
+        </object>
+    </div>
+</body>
+
 </html>
 <script src="script.js"></script>

@@ -116,7 +116,7 @@ async function draw(video, context) {
     if (last_angles.length > last_angles_len) last_angles.pop();
     const sum = last_angles.reduce((a, b) => a + b, 0);
     const avg_angle = sum / last_angles.length || 0;
-    angleText.innerHTML = "Angle = " + avg_angle;
+    angleText.innerHTML = "Angle = " + Math.round(avg_angle);
     //console.log(angle, avg_angle, last_angles);
 
     let page_turn = turn_page(avg_angle);
