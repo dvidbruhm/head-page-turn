@@ -4,6 +4,12 @@ let model;
 let angleText;
 const angle_threshold = 15;
 
+var pdf_doc;
+var total_pages = 0;
+var page_rendering_in_progress = true;
+var current_page = 1;
+var pdf_canvas;
+
 async function setupCamera() {
     video = document.getElementById("webcam");
 
@@ -37,6 +43,11 @@ const setupPage = async () => {
     angleText = document.getElementById("angle");
 
     model = await blazeface.load();
+
+    pdf_canvas = document.getElementById("pdf-canvas");
+    pdf_canvas.height = document.getElementById("pdf-container").getBoundingClientRect().height;
+    console.log(pdf_canvas.height);
+    draw_pdf("assets/4_ad_claritatem_domine.pdf");
     draw(video, context);
 };
 
@@ -116,15 +127,63 @@ async function draw(video, context) {
     if (last_angles.length > last_angles_len) last_angles.pop();
     const sum = last_angles.reduce((a, b) => a + b, 0);
     const avg_angle = sum / last_angles.length || 0;
-    angleText.innerHTML = "Angle = " + Math.round(avg_angle);
+    //angleText.innerHTML = "Angle = " + Math.round(avg_angle);
     //console.log(angle, avg_angle, last_angles);
 
     let page_turn = turn_page(avg_angle);
-    if (page_turn) console.log("PAGE TURN! :D - " + Math.random());
+    if (page_turn) {
+        if (page_rendering_in_progress == false) {
+            if (avg_angle > 0) next_page();
+            else if (avg_angle < 0) prev_page();
+        }
+    }
 
     draw_landmarks(landmarks, context);
 
     setTimeout(draw, 10, video, context);
+}
+
+async function draw_pdf(pdf_url) {
+    pdf_doc = await pdfjsLib.getDocument({ url: pdf_url }).promise;
+    total_pages = pdf_doc.numPages;
+    current_page = 1;
+    draw_page(1);
+}
+
+async function draw_page(page_nb) {
+    page_rendering_in_progress = true;
+
+    document.querySelector("#pdf-next").disabled = true;
+    document.querySelector("#pdf-prev").disabled = true;
+
+    current_page = page_nb;
+    var page = await pdf_doc.getPage(page_nb);
+
+    var viewport = page.getViewport({ scale: pdf_canvas.height / page.getViewport({ scale: 1.0 }).height });
+
+    pdf_canvas.height = viewport.height;
+    pdf_canvas.width = viewport.width;
+    pdf_canvas.style.left = (window.innerWidth - viewport.width) / 2 + "px";
+
+    await page.render({
+        canvasContext: pdf_canvas.getContext('2d'),
+        viewport: viewport
+    }).promise;
+
+    page_rendering_in_progress = false;
+
+    document.querySelector("#pdf-next").disabled = false;
+    document.querySelector("#pdf-prev").disabled = false;
+}
+
+function prev_page() {
+    if (current_page != 1) draw_page(--current_page);
+    console.log("PREV", current_page);
+}
+
+function next_page() {
+    if (current_page != total_pages) draw_page(++current_page);
+    console.log("NEXT", current_page);
 }
 
 setupPage();

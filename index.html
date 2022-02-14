@@ -4,6 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <title>Pdf page turning using a head gesture</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.2.228/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@2.0.0/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
     <link rel="stylesheet" href="style.css" />
@@ -14,12 +15,17 @@
         <video id="webcam" playsinline></video>
         <canvas id="landmarks"></canvas>
     </div>
-    <div id="angle">0</div>
-    <div class="pdf-container">
+    <!-- <div id="angle">0</div> -->
+    <button onclick="prev_page()" id="pdf-prev">Prev</button>
+    <button onclick="next_page()" id="pdf-next">Next</button>
+    <div id="pdf-container">
+        <canvas id="pdf-canvas" style="left: 200px;"></canvas>
+    </div>
+    <!-- <div class="pdf-container">
         <object data="assets/Misty.pdf" type="application/pdf" id="pdf">
             <div>No PDF viewer available</div>
         </object>
-    </div>
+    </div> -->
 </body>
 
 </html>
