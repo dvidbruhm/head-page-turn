@@ -4,6 +4,7 @@ body {
     padding: 0px;
     width: 100%;
     height: 100%;
+    font-size: 1.5rem;
 }
 
 #landmarks {
@@ -15,6 +16,7 @@ body {
 .video-container {
     width: 30%;
     height: 30%;
+    display: none;
 }
 
 #webcam {
@@ -25,16 +27,8 @@ body {
     position: absolute;
     height: 100%;
     width: 100%;
-    background-color:brown;
-}
-
-#pdf-container2 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    height: 100%;
-    width: 100%;
-    background-color: burlywood;
+    background-color:orange;
+    display: none;
 }
 
 #pdf {
@@ -44,11 +38,91 @@ body {
 
 #pdf-canvas {
     position: absolute;
-    background-color:orange;
 }
 
-#pdf-prev {
-    /* position: absolute;
-    top: 50vh; */
-    z-index: 1;
+.pdf-controls {
+    position: absolute;
+    z-index: 3;
+    top: 0;
+    width: 100%;
+}
+
+.pdf-next, .pdf-prev {
+    position: absolute;
+    width: 100px;
+    height: 100vh;
+    color: #11111111;
+    transition-duration: 0.4s;
+    background-color: #00000000;
+    display: none;
+}
+
+.pdf-prev {
+    left: 0px;
+}
+
+.pdf-next {
+    right: 0;
+}
+
+.pdf-next:hover, .pdf-prev:hover {
+    background-color: #11111111;
+    color: #fff;
+}
+
+#button-prev, #button-next {
+    height: 100%;
+    width: 100%;
+    background-color: transparent;
+    border: none;
+    font-size: 2rem;
+    color: inherit;
+}
+
+#pdf-slider {
+    position: absolute;
+    width: 20%;
+    left: 40%;
+}
+
+#drop-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100vh;
+    background-color: aquamarine;
+}
+
+#drop_zone {
+    padding: 30px;
+    margin: 0px;
+    border-radius: 10px;
+    background-color:cyan;
+    width:  400px;
+    height: 200px;
+}
+
+#drop_zone > p {
+    
+    margin: 0;
+    height: 33%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#file-button {
+    margin: 0;
+    height: 33%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+#file-button > input {
+    text-align: center;
+    width: 100%;
+    font-size: 1rem;
 }

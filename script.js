@@ -1,17 +1,27 @@
 let video;
+let video_container;
 let canvas;
 let model;
-let angleText;
+let context;
 const angle_threshold = 15;
+
+const DEBUG = false;
 
 var pdf_doc;
 var total_pages = 0;
 var page_rendering_in_progress = true;
 var current_page = 1;
 var pdf_canvas;
+var pdf_file;
+var drop_container;
 
-async function setupCamera() {
+async function setup_camera() {
     video = document.getElementById("webcam");
+    video_container = document.querySelector(".video-container");
+    if (DEBUG)
+        video_container.style.display = "block";
+    else
+        video_container.style.display = "none";
 
     const stream = await navigator.mediaDevices.getUserMedia({
         audio: false,
@@ -26,29 +36,38 @@ async function setupCamera() {
     });
 }
 
-const setupPage = async () => {
-    await setupCamera();
+const setup_pdf_page = async () => {
+    drop_container = document.querySelector("#drop-container");
+    drop_container.style.display = "none";
+
+    await setup_camera();
     video.play();
 
-    videoWidth = video.videoWidth;
-    videoHeight = video.videoHeight;
-
-    canvas = document.getElementById("landmarks");
-    canvas.width = videoWidth;
-    canvas.height = videoHeight;
-    context = canvas.getContext("2d");
-    context.fillStyle = "rgba(255, 255, 255, 0.5)";
-    context.strokeStyle = "rgba(255, 255, 255, 0.5)";
-
-    angleText = document.getElementById("angle");
+    if (DEBUG) {
+        videoWidth = video.videoWidth;
+        videoHeight = video.videoHeight;
+        canvas = document.getElementById("landmarks");
+        canvas.width = videoWidth;
+        canvas.height = videoHeight;
+        context = canvas.getContext("2d");
+        context.fillStyle = "rgba(255, 255, 255, 0.5)";
+        context.strokeStyle = "rgba(255, 255, 255, 0.5)";
+    }
 
     model = await blazeface.load();
 
+    pdf_container = document.getElementById("pdf-container");
+    pdf_container.style.display = "block";
     pdf_canvas = document.getElementById("pdf-canvas");
-    pdf_canvas.height = document.getElementById("pdf-container").getBoundingClientRect().height;
-    console.log(pdf_canvas.height);
-    draw_pdf("assets/4_ad_claritatem_domine.pdf");
-    draw(video, context);
+    pdf_canvas.height = pdf_container.getBoundingClientRect().height;
+
+    button_next = document.querySelector(".pdf-next");
+    button_next.style.display = "block";
+    button_prev = document.querySelector(".pdf-prev");
+    button_prev.style.display = "block";
+
+    draw_pdf(pdf_file);
+    process_webcam(video, context);
 };
 
 async function get_landmarks(video) {
@@ -118,7 +137,7 @@ function draw_landmarks(landmarks, context) {
 
 let last_angles = [];
 let last_angles_len = 4;
-async function draw(video, context) {
+async function process_webcam(video, context) {
     let landmarks = await get_landmarks(video);
 
     let angle = get_angle(landmarks);
@@ -127,8 +146,6 @@ async function draw(video, context) {
     if (last_angles.length > last_angles_len) last_angles.pop();
     const sum = last_angles.reduce((a, b) => a + b, 0);
     const avg_angle = sum / last_angles.length || 0;
-    //angleText.innerHTML = "Angle = " + Math.round(avg_angle);
-    //console.log(angle, avg_angle, last_angles);
 
     let page_turn = turn_page(avg_angle);
     if (page_turn) {
@@ -138,9 +155,10 @@ async function draw(video, context) {
         }
     }
 
-    draw_landmarks(landmarks, context);
+    if (DEBUG)
+        draw_landmarks(landmarks, context);
 
-    setTimeout(draw, 10, video, context);
+    setTimeout(process_webcam, 10, video, context);
 }
 
 async function draw_pdf(pdf_url) {
@@ -153,8 +171,8 @@ async function draw_pdf(pdf_url) {
 async function draw_page(page_nb) {
     page_rendering_in_progress = true;
 
-    document.querySelector("#pdf-next").disabled = true;
-    document.querySelector("#pdf-prev").disabled = true;
+    document.querySelector("#button-next").disabled = true;
+    document.querySelector("#button-prev").disabled = true;
 
     current_page = page_nb;
     var page = await pdf_doc.getPage(page_nb);
@@ -172,8 +190,8 @@ async function draw_page(page_nb) {
 
     page_rendering_in_progress = false;
 
-    document.querySelector("#pdf-next").disabled = false;
-    document.querySelector("#pdf-prev").disabled = false;
+    document.querySelector("#button-next").disabled = false;
+    document.querySelector("#button-prev").disabled = false;
 }
 
 function prev_page() {
@@ -186,4 +204,89 @@ function next_page() {
     console.log("NEXT", current_page);
 }
 
-setupPage();
+function get_key_down(e) {
+    if (page_rendering_in_progress) {
+        return;
+    }
+    if (e.keyCode == 37)  // Left arrow
+        prev_page();
+    else if (e.keyCode == 39)  // Right arrow
+        next_page();
+}
+
+function is_pdf(file_type) {
+    return file_type.split("/").pop().toLowerCase() == "pdf";
+}
+
+function dropHandler(ev) {
+    console.log('File(s) dropped');
+
+    // Prevent default behavior (Prevent file from being opened)
+    ev.preventDefault();
+
+    //TODO: make popups instead of console
+    if (ev.dataTransfer.items) {
+        // Use DataTransferItemList interface to access the file(s) if available
+
+        if (ev.dataTransfer.items.length > 1) {
+            console.log("Please drop only 1 pdf file.");
+            return;
+        }
+
+        // If dropped items aren't files, reject them
+        if (!ev.dataTransfer.items[0].kind === 'file') {
+            console.log("Please drop a file.");
+            return;
+        }
+
+        var file = ev.dataTransfer.items[0].getAsFile();
+
+        if (!is_pdf(file.type)) {
+            console.log("The file is not a pdf.");
+            return;
+        }
+
+        let reader = new FileReader();
+        reader.readAsDataURL(file);
+        let originalFileURL = URL.createObjectURL(file);
+        reader.onload = () => {
+            pdf_file = originalFileURL;
+            setup_pdf_page();
+        };
+
+    } else {
+        // Use DataTransfer interface to access the file(s)
+        if (ev.dataTransfer.files.length > 1) {
+            console.log("Please drop only 1 pdf file.");
+            return;
+        }
+
+        var file = ev.dataTransfer.files[0];
+
+        if (!is_pdf(file.type)) {
+            console.log("The file is not a pdf.");
+            return;
+        }
+
+        console.log(file.name);
+    }
+}
+
+function dragOverHandler(ev) {
+    console.log('File(s) in drop zone');
+
+    // Prevent default behavior (Prevent file from being opened)
+    ev.preventDefault();
+}
+
+
+document.onkeydown = get_key_down;
+
+//setup_pdf_page();
+
+
+// TODO: Nicer front page:
+//          - better colors
+//          - change color when dragging file over drag area
+//          - nicer browse button
+//       Make Browse button work like drag & drop

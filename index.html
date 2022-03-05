@@ -11,21 +11,29 @@
 </head>
 
 <body>
+    <div id="drop-container">
+        <div id="drop_zone" ondrop="dropHandler(event);" ondragover="dragOverHandler(event);">
+            <p>Drag & drop a pdf here</p>
+            <p>or</p>
+            <div id="file-button">
+                <input type="file" id="file-input">
+            </div>
+        </div>
+
+    </div>
     <div class="video-container">
         <video id="webcam" playsinline></video>
         <canvas id="landmarks"></canvas>
     </div>
-    <!-- <div id="angle">0</div> -->
-    <button onclick="prev_page()" id="pdf-prev">Prev</button>
-    <button onclick="next_page()" id="pdf-next">Next</button>
+    <div class="pdf-controls">
+        <div class="pdf-prev"><button onclick="prev_page()" id="button-prev">ᐸ</button></div>
+        <div class="pdf-next"><button onclick="next_page()" id="button-next">ᐳ</button></div>
+        <!-- <input type="range" id="pdf-slider"> -->
+    </div>
     <div id="pdf-container">
         <canvas id="pdf-canvas" style="left: 200px;"></canvas>
     </div>
-    <!-- <div class="pdf-container">
-        <object data="assets/Misty.pdf" type="application/pdf" id="pdf">
-            <div>No PDF viewer available</div>
-        </object>
-    </div> -->
+
 </body>
 
 </html>
